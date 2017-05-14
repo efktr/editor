@@ -14,10 +14,15 @@ MongoClient.connect(process.env.MONGO || "mongodb://localhost:27017/editor", (er
     db = database;
 
 
+    app.use((req, res, next) => {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        next();
+    });
+
     app.listen(process.env.PORT || 3000, function() {
         console.log('listening on 3000')
     });
-
 
     app.get('/data', function (req, res) {
         if(req.get('token') === ADMINTOKEN){

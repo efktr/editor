@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import './App.css';
-import EfktrBody from 'efktr-body/lib';
-import data from '../../body/data/T029Dictionary.json';
+import 'whatwg-fetch';
+import EfktrBody from 'efktr-body';
+import TSVReader from '../../dictionaries/build/TSVReader'
+import dictionary from '../../dictionaries/T029Dictionary.tsv'
+
+const API = 'https://efktr-api.azurewebsites.net/data';
+const TOKEN = 'hello';
 
 class App extends Component {
 
@@ -11,16 +16,55 @@ class App extends Component {
         this.state = {
             latlng: undefined,
             side: undefined,
-            data: data
+            data: []
         };
 
         this.updateFields = this.updateFields.bind(this);
+        this.loadBodyParts = this.loadBodyParts.bind(this);
+        this.saveData = this.saveData.bind(this);
+
+    }
+
+    componentDidMount(){
+        this.loadBodyParts();
+    }
+
+    loadBodyParts(){
+        let reader = new TSVReader();
+
+        reader.read(dictionary, null, null, () => {
+            this.setState({
+                data: reader.getData()
+            });
+        });
     }
 
     updateFields(data){
         this.setState({
             latlng: data.latlng,
             side: data.side
+        });
+    }
+
+    saveData(){
+        let self = this;
+        fetch(API, {
+            method: 'POST',
+            headers: {
+                'token': TOKEN,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                side: self.state.side,
+                latlng: self.state.latlng,
+
+            })
+        })
+            .then(function(data) {
+                console.log('request succeeded with JSON response', data)
+            })
+            .catch(function(error) {
+            console.log('request failed', error)
         });
     }
 
@@ -36,7 +80,7 @@ class App extends Component {
                         <div className="field">
                             <select className="ui search dropdown">
                                 {this.state.data.map( e => {
-                                    return <option value={e.cui}>{e.definition}</option>
+                                    return <option key={e.cui} value={e.cui}>{e.definition}</option>
                                 })}
                             </select>
                         </div>
@@ -53,7 +97,7 @@ class App extends Component {
                     </div>
                     <div className="fields">
                         <div className="field">
-                            <input className="ui button positive attached" type="button" value="Submit"/>
+                            <input className="ui button positive attached" type="button" value="Submit" onClick={this.saveData()}/>
                         </div>
                     </div>
                 </div>
