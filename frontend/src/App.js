@@ -4,9 +4,10 @@ import 'whatwg-fetch';
 import EfktrBody from 'efktr-body';
 import TSVReader from '../../dictionaries/build/TSVReader'
 import dictionary from '../../dictionaries/T029Dictionary.tsv'
+import $ from "jquery";
 
-const API = 'https://efktr-api.azurewebsites.net/data';
-const TOKEN = 'hello';
+const API = process.env.REACT_APP_API || 'http://localhost:3030/data';
+const TOKEN = process.env.REACT_APP_TOKEN || 'superSecretTokenItIs!';
 
 class App extends Component {
 
@@ -27,6 +28,13 @@ class App extends Component {
 
     componentDidMount(){
         this.loadBodyParts();
+
+        $('.ui.form').form({
+
+            onSuccess: () => {
+                alert("hi");
+            }
+        });
     }
 
     loadBodyParts(){
@@ -47,24 +55,36 @@ class App extends Component {
     }
 
     saveData(){
-        let self = this;
+
+        let form = document.getElementById('form');
+        console.log(form);
+        let formData = new FormData(form);
+
+        // data.append( "json", JSON.stringify({
+        //     side: this.state.side,
+        //     latlng: this.state.latlng
+        // }));
+
+        form.append('data', 'Chris');
+
+        console.log(formData);
+
+        return;
+
         fetch(API, {
             method: 'POST',
             headers: {
                 'token': TOKEN,
-                'Content-Type': 'application/json'
+                'Accept': 'application/json',
+                "content-type": "application/json"
             },
-            body: JSON.stringify({
-                side: self.state.side,
-                latlng: self.state.latlng,
-
-            })
+            body: form
         })
-            .then(function(data) {
-                console.log('request succeeded with JSON response', data)
+            .then(function(d) {
+                console.log('Request succeeded with response: ', d)
             })
             .catch(function(error) {
-            console.log('request failed', error)
+            console.log('Request failed: ', error)
         });
     }
 
@@ -75,7 +95,7 @@ class App extends Component {
                     <h3>Body Editor</h3>
                 </div>
                 <EfktrBody back={this.state.side} onClick={this.updateFields}/>
-                <div className="ui form">
+                <form id="form" className="ui form">
                     <div className="fields">
                         <div className="field">
                             <select className="ui search dropdown">
@@ -97,10 +117,10 @@ class App extends Component {
                     </div>
                     <div className="fields">
                         <div className="field">
-                            <input className="ui button positive attached" type="button" value="Submit" onClick={this.saveData()}/>
+                            <input className="ui button positive attached" type="button" value="Submit" onClick={this.saveData}/>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         );
     }

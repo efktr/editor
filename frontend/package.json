@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "efktr-body": "^1.0.1",
+    "jquery": "^3.2.1",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "whatwg-fetch": "^2.0.3"
