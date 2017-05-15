@@ -73,6 +73,7 @@ class App extends Component {
     }
 
     updateFields(data){
+        alert(true);
         this.setState({
             latlng: data.latlng,
             side: data.side
@@ -128,7 +129,7 @@ class App extends Component {
                             <select value={this.state.cui} onChange={(e) => {
                                 this.setState({cui: e.target.value})
                             }} className="ui search dropdown">
-                                {this.state.data.map( e => {
+                                {this.state.data.map(e => {
                                     return <option key={e.cui} value={e.cui}>{e.definition}</option>
                                 })}
                             </select>
