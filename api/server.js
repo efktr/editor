@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser= require("body-parser");
 const MongoClient = require("mongodb").MongoClient;
+const Joi = require('joi');
 
 const app = express();
 
@@ -33,15 +34,34 @@ MongoClient.connect(process.env.MONGO || "mongodb://localhost:27017/editor", (er
         }
     });
 
+    const schema = Joi.object().keys({
+        type: Joi.string().valid('Point').required(),
+        coordinates: Joi.array().length(2).required(),
+        properties: Joi.object().keys({
+            side: Joi.string().length(1).valid('F').valid('B').required(),
+            user: Joi.string().guid().required(),
+            cui: Joi.string().required()
+        })
+    });
+
+
     app.post('/data', (req, res) => {
-        console.log(req);
-        if(req.get('token') === TOKEN){
-            db.collection('data').insertOne(req.body, (err, result) => {
-                if (err) return console.log(err);
-                res.send(result);
-            });
-        } else {
-            res.status(400).send();
-        }
+        console.log(req.body);
+
+        Joi.validate(req.body, schema, (error, result) => {
+            if(error !== null){
+                console.error(error);
+                res.status(400).send(error);
+            } else {
+                if(req.get('token') === TOKEN){
+                    db.collection('data').insertOne(req.body, (err, result) => {
+                        if (err) return console.log(err);
+                        res.send(result);
+                    });
+                } else {
+                    res.status(400).send();
+                }
+            }
+        });
     });
 });
