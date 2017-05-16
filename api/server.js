@@ -46,11 +46,8 @@ MongoClient.connect(process.env.MONGO || "mongodb://localhost:27017/editor", (er
 
 
     app.post('/data', (req, res) => {
-        console.log(req.body);
-
         Joi.validate(req.body, schema, (error, result) => {
             if(error !== null){
-                console.error(error);
                 res.status(400).send(error);
             } else {
                 if(req.get('token') === TOKEN){
