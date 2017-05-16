@@ -73,7 +73,6 @@ class App extends Component {
     }
 
     updateFields(data){
-        alert(true);
         this.setState({
             latlng: data.latlng,
             side: data.side
