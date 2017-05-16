@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import 'whatwg-fetch';
 import EfktrBody from 'efktr-body';
+import Snackbar from 'material-ui/Snackbar'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import TSVReader from '../../dictionaries/build/TSVReader'
 import dictionary from '../../dictionaries/T029Dictionary.tsv'
 import $ from "jquery";
@@ -11,6 +13,16 @@ const API = process.env.REACT_APP_API || 'http://localhost:3030/data';
 const TOKEN = process.env.REACT_APP_TOKEN || 'superSecretTokenItIs!';
 
 class App extends Component {
+
+    static childContextTypes = {
+            muiTheme: React.PropTypes.object
+    };
+
+    getChildContext() {
+        return {
+            muiTheme: getMuiTheme()
+        }
+    }
 
     constructor(props){
         super(props);
@@ -22,7 +34,9 @@ class App extends Component {
             token: undefined,
             showBack: false,
             user: localStorage.getItem('user'),
-            data: []
+            data: [],
+            open: false,
+            message: ""
         };
 
         this.updateFields = this.updateFields.bind(this);
@@ -30,6 +44,7 @@ class App extends Component {
         this.saveData = this.saveData.bind(this);
         this.updateUserUUID = this.updateUserUUID.bind(this);
         this.updateToken = this.updateToken.bind(this);
+        this.handleRequestClose = this.handleRequestClose.bind(this);
     }
 
     componentDidMount(){
@@ -102,14 +117,25 @@ class App extends Component {
             },
             dataType: 'json'
         }).done(data => {
-            alert('OK!');
+            this.setState({
+                open: true,
+                message: "Submitted!"
+            });
         }).fail((xhr, status, error) => {
-            console.log(error);
-            alert(error);
+            this.setState({
+                open: true,
+                message: "Error! Please check the fields!"
+            });
         });
 
         return;
     }
+
+    handleRequestClose = () => {
+        this.setState({
+            open: false,
+        });
+    };
 
     render(){
         return (
@@ -164,6 +190,12 @@ class App extends Component {
                         </div>
                     </div>
                 </div>
+                <Snackbar
+                    open={this.state.open}
+                    message={this.state.message}
+                    autoHideDuration={4000}
+                    onRequestClose={this.handleRequestClose}
+                />
             </div>
         );
     }
