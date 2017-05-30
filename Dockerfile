@@ -7,6 +7,10 @@ WORKDIR /usr/src/app
 # Bundle app source
 COPY . /usr/src/app
 
+RUN git submodule update --recursive --init && git submodule update --recursive --remote
+
+WORKDIR /usr/src/app/frontend
+
 # Use defaults or ENV file
 RUN npm install
 
