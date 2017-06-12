@@ -20,7 +20,7 @@ WORKDIR /usr/src/app/frontend
 # Use defaults or ENV file
 RUN npm install
 
-RUN REACT_APP_API=http://efktr-api.azurewebsites.net npm run build
+RUN REACT_APP_API=http://efktr-api.azurewebsites.net/data npm run build
 
 RUN npm install -g serve
 
