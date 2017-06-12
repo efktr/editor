@@ -7,9 +7,15 @@ WORKDIR /usr/src/app
 # Bundle app source
 COPY . /usr/src/app
 
-WORKDIR /usr/src/app/frontend
+RUN git submodule update --recursive --init && git submodule update --recursive --remote
 
-RUN ls /usr/src/app/dictionaries/
+WORKDIR /usr/src/app/dictionaries
+
+RUN npm install && npm install -g webpack
+
+RUN webpack
+
+WORKDIR /usr/src/app/frontend
 
 # Use defaults or ENV file
 RUN npm install
