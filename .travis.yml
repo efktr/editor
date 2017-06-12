@@ -1,0 +1,21 @@
+sudo: required
+language: node_js
+node_js:
+  - "node"
+cache:
+  yarn: true
+git:
+  submodules: false
+services:
+  - docker
+before_install:
+  - git submodule update --recursive --init
+  - git submodule update --recursive --remote
+install:
+  - docker build -t efktr/editor-frontend .
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" ;
+    docker push efktr/editor-frontend:latest ;
+    curl -H "$DOCKER_TRIGGER_HEADER" --data "{}" "$DOCKER_TRIGGER_URL" ;
+    fi
