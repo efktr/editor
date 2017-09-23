@@ -5,7 +5,7 @@ import EfktrBody from 'efktr-body';
 import Snackbar from 'material-ui/Snackbar'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import TSVReader from '../../dictionaries/build/TSVReader'
-import dictionary from '../../dictionaries/T029Dictionary.tsv'
+import dictionary from '../../dictionaries/siderUMLSToDefinition.tsv'
 import $ from "jquery";
 const uuid = require('uuid/v1');
 
